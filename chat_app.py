@@ -10,6 +10,9 @@ from langchain.schema import (
 )
 
 def authenticate_user():
+    
+    print("*****************************************************************")
+
     credentials = {
         "usernames": {
             "test": {
@@ -29,22 +32,35 @@ def authenticate_user():
     # ログインページの表示
     name, authentication_status, username = authenticator.login('Login', 'main')
 
+    print("クリック！")
+
     if authentication_status:
+        print("ok")
+        st.sidebar.title("テーマ一覧")
         return True
     elif authentication_status == False:
+        print("false")
         st.error("Username/password is incorrect")
         return False
     elif authentication_status == None:
+        print("none")
         st.warning("Please enter your username and password")
         return False
 
 def init_page():
-    st.set_page_config(
-        page_title="Webアプリ用語100本ノック"
-    )
+    print("init")
+
+    # if "not_first_time" in st.session_state:
+    #     return
+
+    # st.set_page_config(
+    #     page_title="Webアプリ用語100本ノック"
+    # )
     st.header("面接対策100本ノック")
     st.write("このアプリは、面接時によく聞かれるWebアプリに関連する専門用語について、回答の仕方を練習するものです。")
     st.write("左のサイドバーから、取り組みたいテーマを選択してください。")
+
+    # st.session_state.not_first_time = True
 
 
 def init_messages():
@@ -114,8 +130,7 @@ def set_current_question(id):
 
 
 def main():
-    if not authenticate_user():
-        return
+    init_page()
 
     create_dict_from_excel()
     display_questions()
@@ -159,5 +174,6 @@ def main():
     # init_correct_num()
 
 if __name__ == '__main__':
-    init_page()
-    main()
+    if authenticate_user():
+        # init_page()
+        main()
