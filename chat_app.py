@@ -229,10 +229,10 @@ def main():
         st.chat_message("user").markdown(user_input)
         with st.chat_message("assistant"):
             st_callback = StreamlitCallbackHandler(st.container())
-            print(messages)
-            print("messages")
-            response = llm(messages, callbacks=[st_callback])
+            response = llm(st.session_state.messages, callbacks=[st_callback])
 
+        print("response=========================================")
+        print(response)
         st.session_state.messages.append(AIMessage(content=response.content))
 
             # time.sleep(3)
