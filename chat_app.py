@@ -98,14 +98,14 @@ def init_messages():
         ]
         st.session_state.costs = []
 
-    if 'current_question_id' in st.session_state:
-        if st.session_state.current_question_id != 9999:
-            question_id = st.session_state.current_question_id
-            question_dict = find_dictionary_by_id(question_id)
-            st.session_state.messages = [
-                SystemMessage(content=role),
-                AIMessage(content=question_dict['content'])
-            ]
+    # if 'current_question_id' in st.session_state:
+        # # if st.session_state.current_question_id != 9999:
+        # question_id = st.session_state.current_question_id
+        # question_dict = find_dictionary_by_id(question_id)
+        # st.session_state.messages = [
+        #     SystemMessage(content=role),
+        #     AIMessage(content=question_dict['content'])
+        # ]
 
 def find_dictionary_by_id(id_to_find):
     for dictionary in st.session_state.questions_list:
@@ -154,7 +154,13 @@ def display_questions():
 
 def set_current_question(id):
     st.session_state.current_question_id = id
+    role = "あなたはエンジニア採用を行う面接官です。あなたの問いに対して入社希望者が回答したら、その回答に対して内容が妥当か判断してください。正しい場合は、「よく理解されていますね」と答えた上で、必要に応じて補足を行ってください。不足や誤りがある場合は、正解は提示せずに、再度考えるよう促してください"
 
+    question_dict = find_dictionary_by_id(id)
+    st.session_state.messages = [
+        SystemMessage(content=role),
+        AIMessage(content=question_dict['content'])
+    ]
 
 def register_cookie_to_state():
     if not "cleared_questions" in st.session_state:
@@ -178,9 +184,6 @@ def main():
 
     llm = select_model()
     init_messages()
-
-    print("これから表示！！！！！！")
-    print(st.session_state.get('messages', []))
 
     messages = st.session_state.get('messages', [])
     for message in messages:
@@ -207,7 +210,6 @@ def main():
             if "よく理解されていますね" in response.content:
                 st.session_state.cleared_questions.append(st.session_state.current_question_id)
                 set_cookie()
-                st.session_state.current_question_id = 9999
 
 
 if __name__ == '__main__':
