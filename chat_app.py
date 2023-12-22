@@ -182,19 +182,34 @@ def main():
 
     # 初期設定
     init_page()
+    print("init_page終了")
+    if "messages" in st.session_state:
+        print(st.session_state.messages)
+    else:
+        print("messagesなし")
+
     register_cookie_to_state()
     create_dict_from_excel()
     display_questions()
+    print("display_questions終了")
+    if "messages" in st.session_state:
+        print(st.session_state.messages)
+    else:
+        print("messagesなし")
+
 
     llm = select_model()
     # init_messages()
 
     role = "あなたはエンジニア採用を行う面接官です。あなたの問いに対して入社希望者が回答したら、その回答に対して内容が妥当か判断してください。正しい場合は、「よく理解されていますね」と答えた上で、必要に応じて補足を行ってください。不足や誤りがある場合は、正解は提示せずに、再度考えるよう促してください"
     if "messages" not in st.session_state:
+        print("messagesは存在しない")
+        st.write("messagesなし")
+
         st.session_state.messages = [
             SystemMessage(content=role),
         ]
-        st.session_state.costs = []
+        # st.session_state.costs = []
     
     messages = st.session_state.get('messages', [])
     for message in messages:
@@ -228,10 +243,12 @@ def main():
         print(last_response)
         print("last")
 
-        if "よく理解されていますね" in last_response.content:
-            print("含まれている")
-            st.session_state.cleared_questions.append(st.session_state.current_question_id)
-            set_cookie()
+        # if "よく理解されていますね" in last_response.content:
+        #     print("含まれている")
+        #     st.session_state.cleared_questions.append(st.session_state.current_question_id)
+        #     set_cookie()
+        #     print("ifおわり")
+        #     print(st.session_state.messages)
 
 
 if __name__ == '__main__':
