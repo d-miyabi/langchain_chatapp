@@ -233,7 +233,7 @@ def main():
             print("messages")
             response = llm(messages, callbacks=[st_callback])
 
-            st.session_state.messages.append(AIMessage(content=response.content))
+        st.session_state.messages.append(AIMessage(content=response.content))
 
             # time.sleep(3)
         print("finish")
@@ -243,12 +243,12 @@ def main():
         print(last_response)
         print("last")
 
-        # if "よく理解されていますね" in last_response.content:
-        #     print("含まれている")
-        #     st.session_state.cleared_questions.append(st.session_state.current_question_id)
-        #     set_cookie()
-        #     print("ifおわり")
-        #     print(st.session_state.messages)
+        if "よく理解されていますね" in last_response.content:
+            print("含まれている")
+            st.session_state.cleared_questions.append(st.session_state.current_question_id)
+            set_cookie()
+            print("ifおわり")
+            print(st.session_state.messages)
 
 
 if __name__ == '__main__':
