@@ -183,8 +183,15 @@ def main():
     display_questions()
 
     llm = select_model()
-    init_messages()
+    # init_messages()
 
+    role = "あなたはエンジニア採用を行う面接官です。あなたの問いに対して入社希望者が回答したら、その回答に対して内容が妥当か判断してください。正しい場合は、「よく理解されていますね」と答えた上で、必要に応じて補足を行ってください。不足や誤りがある場合は、正解は提示せずに、再度考えるよう促してください"
+    if "messages" not in st.session_state:
+        st.session_state.messages = [
+            SystemMessage(content=role),
+        ]
+        st.session_state.costs = []
+    
     messages = st.session_state.get('messages', [])
     for message in messages:
         if isinstance(message, AIMessage):
