@@ -2,6 +2,7 @@ import streamlit as st
 import streamlit_authenticator as stauth
 import pandas as pd
 import extra_streamlit_components as stx
+import time
 from datetime import datetime, timedelta
 from langchain.callbacks import StreamlitCallbackHandler
 from langchain.chat_models import ChatOpenAI
@@ -213,6 +214,8 @@ def main():
             response = llm(messages, callbacks=[st_callback])
 
             st.session_state.messages.append(AIMessage(content=response.content))
+
+            time.sleep(3)
 
             if "よく理解されていますね" in response.content:
                 st.session_state.cleared_questions.append(st.session_state.current_question_id)
