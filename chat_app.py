@@ -173,6 +173,9 @@ def register_cookie_to_state():
 
 
 def main():
+    print("main start")
+
+
     # 検証用のボタン
     if st.button("Delete"):
         cookie_manager.delete("cleared_questions")
@@ -211,15 +214,24 @@ def main():
         st.chat_message("user").markdown(user_input)
         with st.chat_message("assistant"):
             st_callback = StreamlitCallbackHandler(st.container())
+            print(messages)
+            print("messages")
             response = llm(messages, callbacks=[st_callback])
 
             st.session_state.messages.append(AIMessage(content=response.content))
 
-            time.sleep(3)
+            # time.sleep(3)
+        print("finish")
 
-            if "よく理解されていますね" in response.content:
-                st.session_state.cleared_questions.append(st.session_state.current_question_id)
-                set_cookie()
+        last_response = st.session_state.messages[-1]
+
+        print(last_response)
+        print("last")
+
+        if "よく理解されていますね" in last_response.content:
+            print("含まれている")
+            st.session_state.cleared_questions.append(st.session_state.current_question_id)
+            set_cookie()
 
 
 if __name__ == '__main__':
