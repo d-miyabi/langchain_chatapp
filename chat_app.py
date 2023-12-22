@@ -173,8 +173,8 @@ def register_cookie_to_state():
 
 def main():
     # 検証用のボタン
-    # if st.button("Delete"):
-    #     cookie_manager.delete("cleared_questions")
+    if st.button("Delete"):
+        cookie_manager.delete("cleared_questions")
 
     # 初期設定
     init_page()
