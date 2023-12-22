@@ -99,12 +99,13 @@ def init_messages():
         st.session_state.costs = []
 
     if 'current_question_id' in st.session_state:
-        question_id = st.session_state.current_question_id
-        question_dict = find_dictionary_by_id(question_id)
-        st.session_state.messages = [
-            SystemMessage(content=role),
-            AIMessage(content=question_dict['content'])
-        ]
+        if st.session_state.current_question_id != 9999:
+            question_id = st.session_state.current_question_id
+            question_dict = find_dictionary_by_id(question_id)
+            st.session_state.messages = [
+                SystemMessage(content=role),
+                AIMessage(content=question_dict['content'])
+            ]
 
 def find_dictionary_by_id(id_to_find):
     for dictionary in st.session_state.questions_list:
@@ -169,17 +170,17 @@ def main():
     # if st.button("Delete"):
     #     cookie_manager.delete("cleared_questions")
 
+    # 初期設定
     init_page()
     register_cookie_to_state()
-
     create_dict_from_excel()
     display_questions()
 
     llm = select_model()
     init_messages()
 
-    if 'correct_answers_num' not in st.session_state:
-        st.session_state.correct_answers_num = 0
+    print("これから表示！！！！！！")
+    print(st.session_state.get('messages', []))
 
     messages = st.session_state.get('messages', [])
     for message in messages:
@@ -192,6 +193,7 @@ def main():
 
 
     # ユーザーの入力を監視
+    isOK = False
     user_input = st.chat_input("こちらに回答を入力してください")
     if user_input:
         st.session_state.messages.append(HumanMessage(content=user_input))
@@ -199,14 +201,13 @@ def main():
         with st.chat_message("assistant"):
             st_callback = StreamlitCallbackHandler(st.container())
             response = llm(messages, callbacks=[st_callback])
+
+            st.session_state.messages.append(AIMessage(content=response.content))
+
             if "よく理解されていますね" in response.content:
                 st.session_state.cleared_questions.append(st.session_state.current_question_id)
                 set_cookie()
-
-        st.session_state.messages.append(AIMessage(content=response.content))
-
-        if response:
-            st.session_state.messages.append(AIMessage(content=response.content))
+                st.session_state.current_question_id = 9999
 
 
 if __name__ == '__main__':
