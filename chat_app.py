@@ -173,7 +173,7 @@ def register_cookie_to_state():
 
 
 def main():
-    print("main start")
+    print("===== main start =====")
 
 
     # 検証用のボタン
