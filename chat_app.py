@@ -213,6 +213,9 @@ def main():
         if st.button("Delete"):
             cookie_manager.delete("cleared_questions")
 
+            for key in list(st.session_state.keys()):
+                del st.session_state[key]
+
     # 初期設定
     init_page()
 
@@ -308,11 +311,14 @@ def main():
                     # logging.info(response.content)
 
                     if "では、次の問題に進みましょう" in response.content:
+                        logging.info("正解の場合")
+
                         logging.info("含まれている")
                         logging.info(st.session_state.messages)
 
-                        st.session_state.cleared_questions.append(st.session_state.current_question_id)
-                        set_cookie()
+                        if not st.session_state.current_question_id in st.session_state.cleared_questions:
+                            st.session_state.cleared_questions.append(st.session_state.current_question_id)
+                            set_cookie()
 
 
             # st.session_state.messages.append(AIMessage(content=response))
