@@ -268,11 +268,11 @@ def main():
             logging.info("===== api使用直前 =====")
             logging.info(messages)
 
-        response = llm(messages)
+        # response = llm(messages)
 
-        if test_mode:
-            logging.info("===== api使用直後 =====")
-            logging.info(response)
+        # if test_mode:
+        #     logging.info("===== api使用直後 =====")
+        #     logging.info(response)
 
         # st.session_state.messages.append(AIMessage(content=response.content))
         # st.chat_message("assistant").markdown(response.content)
