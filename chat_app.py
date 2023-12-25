@@ -259,9 +259,16 @@ def main():
         st.chat_message("user").markdown(user_input)
 
         messages = st.session_state.get('messages', [])
+
+        if test_mode:
+            print("===== api使用直前 =====")
+            print('messages')
+
         response = llm(messages)
 
-        print(response)
+        if test_mode:
+            print("===== api使用直後 =====")
+            print(response)
 
         st.session_state.messages.append(AIMessage(content=response.content))
         st.chat_message("assistant").markdown(response.content)
