@@ -213,6 +213,7 @@ def main():
         if st.button("Delete"):
             cookie_manager.delete("cleared_questions")
 
+        if st.button("Delete session"):
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
 
