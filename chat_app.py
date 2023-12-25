@@ -286,17 +286,20 @@ def main():
             logging.info("===== ユーザー入力あり =====")
             logging.info("\n")
 
-        logging.info("セッション追加前")
-        logging.info(st.session_state.messages)
-        st.session_state.messages.append(HumanMessage(content=user_input))
+        with st.chat_message("user"):
+            logging.info("セッション追加前")
+            logging.info(st.session_state.messages)
+            st.session_state.messages.append(HumanMessage(content=user_input))
 
-        logging.info("セッション追加後")
-        logging.info(st.session_state.messages)
+            logging.info("セッション追加後")
+            logging.info(st.session_state.messages)
 
 
-        st.chat_message("user").markdown(user_input)
+            # st.chat_message("user").markdown(user_input)
+            st.markdown(user_input)
 
-        messages = st.session_state.messages
+
+            messages = st.session_state.messages
 
         if test_mode:
             logging.info("===== api使用直前 =====")
