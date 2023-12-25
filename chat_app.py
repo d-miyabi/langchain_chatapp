@@ -255,7 +255,7 @@ def main():
         print(response)
 
         st.session_state.messages.append(AIMessage(content=response.content))
-        st.chat_message("assistant").markdown(response)
+        st.chat_message("assistant").markdown(response.content)
 
         # with st.chat_message("assistant"):
             # st_callback = StreamlitCallbackHandler(st.container())
