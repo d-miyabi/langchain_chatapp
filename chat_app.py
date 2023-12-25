@@ -253,7 +253,8 @@ def main():
         ]
         # st.session_state.costs = []
     
-    messages = st.session_state.get('messages', [])
+    # messages = st.session_state.get('messages', [])
+    messages = st.session_state.messages
     for message in messages:
         if isinstance(message, AIMessage):
             with st.chat_message('assistant'):
@@ -273,7 +274,7 @@ def main():
         st.session_state.messages.append(HumanMessage(content=user_input))
         st.chat_message("user").markdown(user_input)
 
-        messages = st.session_state.get('messages', [])
+        messages = st.session_state.messages
 
         if test_mode:
             logging.info("===== api使用直前 =====")
@@ -333,12 +334,12 @@ def main():
             logging.info(st.session_state.messages)
             logging.info("\n")
 
-        last_response = st.session_state.messages[-1]
+        # last_response = st.session_state.messages[-1]
 
-        if test_mode:
-            logging.info("===== 最後のメッセージ =====")
-            logging.info(last_response)
-            logging.info('\n')
+        # if test_mode:
+        #     logging.info("===== 最後のメッセージ =====")
+        #     logging.info(last_response)
+        #     logging.info('\n')
 
 
 if __name__ == '__main__':
