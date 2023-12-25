@@ -12,16 +12,14 @@ from langchain.schema import (
     AIMessage
 )
 
+test_mode = True
+
 cookie_manager = stx.CookieManager(key="cookie")
 
-
-from datetime import datetime, timedelta
-
 def get_expire_date():
-    # Getting today's date
     today = datetime.now()
 
-    # Adding 30 days
+    # 30日後の日付を計算
     future_date = today + timedelta(days=30)
 
     return future_date
@@ -84,7 +82,9 @@ def authenticate_user():
         st.warning("Please enter your username and password")
         return False
 
+
 def init_page():
+    print("===== init_page start =====")
     st.header("面接対策100本ノック")
     st.write("このアプリは、面接時によく聞かれるWebアプリに関連する専門用語について、回答の仕方を練習するものです。")
     st.write("左のサイドバーから、取り組みたいテーマを選択してください。")
@@ -168,43 +168,61 @@ def register_cookie_to_state():
         value = cookie_manager.get(cookie="cleared_questions")
         if value:
             st.session_state.cleared_questions = string_to_list(value)
+            if test_mode:
+                print("===== クッキーの内容 =====")
+                print(value)
         else:
             st.session_state.cleared_questions = []
+            if test_mode:
+                print("===== クッキーなし =====")
 
 
 def main():
-    print("===== main start =====")
-
+    if test_mode:
+        print("===== main start =====")
+        current_time = datetime.now()
+        print(current_time.strftime("%Y-%m-%d %H:%M:%S"))
+        print("\n")
 
     # 検証用のボタン
-    if st.button("Delete"):
-        cookie_manager.delete("cleared_questions")
+    if test_mode:
+        if st.button("Delete"):
+            cookie_manager.delete("cleared_questions")
 
     # 初期設定
     init_page()
-    print("init_page終了")
-    if "messages" in st.session_state:
-        print(st.session_state.messages)
-    else:
-        print("messagesなし")
+
+    if test_mode:
+        print("===== init_page終了 =====")
+        if "messages" in st.session_state:
+            print(st.session_state.messages)
+            print("\n")
+        else:
+            print("messagesなし")
+            print("\n")
 
     register_cookie_to_state()
     create_dict_from_excel()
     display_questions()
-    print("display_questions終了")
-    if "messages" in st.session_state:
-        print(st.session_state.messages)
-    else:
-        print("messagesなし")
+
+    if test_mode:
+        print("===== display_questions終了 =====")
+        if "messages" in st.session_state:
+            print(st.session_state.messages)
+            print("\n")
+        else:
+            print("messagesなし")
+            print("\n")
 
 
     llm = select_model()
     # init_messages()
 
     role = "あなたはエンジニア採用を行う面接官です。あなたの問いに対して入社希望者が回答したら、その回答に対して内容が妥当か判断してください。正しい場合は、「よく理解されていますね」と答えた上で、必要に応じて補足を行ってください。不足や誤りがある場合は、正解は提示せずに、再度考えるよう促してください"
+
     if "messages" not in st.session_state:
         print("messagesは存在しない")
-        st.write("messagesなし")
+        print("\n")
 
         st.session_state.messages = [
             SystemMessage(content=role),
@@ -222,20 +240,26 @@ def main():
 
 
     # ユーザーの入力を監視
-    isOK = False
     user_input = st.chat_input("こちらに回答を入力してください")
     if user_input:
+        if test_mode:
+            print("===== ユーザー入力あり =====")
+            print("\n")
+
         st.session_state.messages.append(HumanMessage(content=user_input))
         st.chat_message("user").markdown(user_input)
+
         with st.chat_message("assistant"):
             st_callback = StreamlitCallbackHandler(st.container())
             response = llm(st.session_state.messages, callbacks=[st_callback])
 
-        print("response=========================================")
-        print(response)
+
+        if test_mode:
+            print("===== レスポンスのwith終了 =====")
+            print(response)
+
         st.session_state.messages.append(AIMessage(content=response.content))
 
-            # time.sleep(3)
         print("finish")
 
         last_response = st.session_state.messages[-1]
