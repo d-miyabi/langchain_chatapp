@@ -158,7 +158,7 @@ def display_questions():
 
 def set_current_question(id):
     if test_mode:
-        print("===== set_current_quesion開始 =====")
+        print("===== set_current_question開始 =====")
 
     st.session_state.current_question_id = id
     role = "あなたはエンジニア採用を行う面接官です。あなたの問いに対して入社希望者が回答したら、その回答に対して内容が妥当か判断してください。正しい場合は、「よく理解されていますね」と答えた上で、必要に応じて補足を行ってください。不足や誤りがある場合は、正解は提示せずに、再度考えるよう促してください"
@@ -170,7 +170,7 @@ def set_current_question(id):
     ]
 
     if test_mode:
-        print("question_dict: " + question_dict)
+        print("question_dict: " + question_dict['content'])
 
 def register_cookie_to_state():
     if not "cleared_questions" in st.session_state:
