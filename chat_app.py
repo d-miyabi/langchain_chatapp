@@ -213,15 +213,6 @@ def main():
         else:
             logging.info("messagesはありません")
 
-
-        # logging.info(st.session_state.messages)
-        # logging.info(st.session_state.questions_list)
- 
-
-
-
-
-
         current_time = datetime.now()
 
         logging.info(current_time.strftime("%Y-%m-%d %H:%M:%S"))
@@ -295,7 +286,14 @@ def main():
             logging.info("===== ユーザー入力あり =====")
             logging.info("\n")
 
+        logging.info("セッション追加前")
+        logging.info(st.session_state.messages)
         st.session_state.messages.append(HumanMessage(content=user_input))
+
+        logging.info("セッション追加後")
+        logging.info(st.session_state.messages)
+
+
         st.chat_message("user").markdown(user_input)
 
         messages = st.session_state.messages
