@@ -68,7 +68,7 @@ def authenticate_user():
         credentials=credentials,
         cookie_name="cookie_name",
         key="some_signature_key",
-        cookie_expiry_days=0
+        cookie_expiry_days=30
     )
 
     # ログインページの表示
