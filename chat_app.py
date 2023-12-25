@@ -101,14 +101,6 @@ def init_messages():
         ]
         st.session_state.costs = []
 
-    # if 'current_question_id' in st.session_state:
-        # # if st.session_state.current_question_id != 9999:
-        # question_id = st.session_state.current_question_id
-        # question_dict = find_dictionary_by_id(question_id)
-        # st.session_state.messages = [
-        #     SystemMessage(content=role),
-        #     AIMessage(content=question_dict['content'])
-        # ]
 
 def find_dictionary_by_id(id_to_find):
     for dictionary in st.session_state.questions_list:
@@ -277,29 +269,37 @@ def main():
         # st.session_state.messages.append(AIMessage(content=response.content))
         # st.chat_message("assistant").markdown(response.content)
 
-        with st.chat_message("assistant"):
-            st_callback = StreamlitCallbackHandler(st.container())
-            # response = llm(st.session_state.messages, callbacks=[st_callback])
-            logging.info("APIからのレスポンス直前")
-            logging.info(messages)
-            response = llm(messages, callbacks=[st_callback])
+        try:
+            with st.chat_message("assistant"):
+                st_callback = StreamlitCallbackHandler(st.container())
+                # response = llm(st.session_state.messages, callbacks=[st_callback])
+                logging.info("APIからのレスポンス直前")
+                logging.info(messages)
+                response = llm(messages, callbacks=[st_callback])
 
 
-            logging.info(response.content)
+                logging.info(response.content)
 
-            if "では、次の問題に進みましょう" in response.content:
-                logging.info("含まれている")
-                logging.info(st.session_state.messages)
+                if "では、次の問題に進みましょう" in response.content:
+                    logging.info("含まれている")
+                    logging.info(st.session_state.messages)
 
-                # st.session_state.cleared_questions.append(st.session_state.current_question_id)
-                # set_cookie()
+                    # st.session_state.cleared_questions.append(st.session_state.current_question_id)
+                    # set_cookie()
+
+            
+            st.session_state.messages.append(AIMessage(content=response.content))
+
+        except Exception as e:
+            logging.error(f"エラーが発生しました: {e}")
+            logging.error(traceback.format_exc())  # スタックトレースの詳細をログに記録
+
 
         st.session_state.messages.append(AIMessage(content=response.content))
 
         if test_mode:
             logging.info("===== レスポンスのwith終了 =====")
             logging.info(response)
-
 
 
         if test_mode:
@@ -313,14 +313,6 @@ def main():
             logging.info("===== 最後のメッセージ =====")
             logging.info(last_response)
             logging.info('\n')
-
-
-        # if "よく理解されていますね" in last_response.content:
-        #     logging.info("含まれている")
-        #     st.session_state.cleared_questions.append(st.session_state.current_question_id)
-        #     set_cookie()
-        #     logging.info("ifおわり")
-        #     logging.info(st.session_state.messages)
 
 
 if __name__ == '__main__':
