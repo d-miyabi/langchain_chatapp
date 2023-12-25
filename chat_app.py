@@ -279,9 +279,13 @@ def main():
 
         with st.chat_message("assistant"):
             st_callback = StreamlitCallbackHandler(st.container())
-            response = llm(st.session_state.messages, callbacks=[st_callback])
+            # response = llm(st.session_state.messages, callbacks=[st_callback])
+            logging.info("APIからのレスポンス直前")
+            logging.info(messages)
+            response = llm(messages, callbacks=[st_callback])
 
-            logging.log(response)
+
+            logging.info(response.content)
 
             if "では、次の問題に進みましょう" in response.content:
                 logging.info("含まれている")
