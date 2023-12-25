@@ -249,16 +249,25 @@ def main():
         st.session_state.messages.append(HumanMessage(content=user_input))
         st.chat_message("user").markdown(user_input)
 
-        with st.chat_message("assistant"):
-            st_callback = StreamlitCallbackHandler(st.container())
-            response = llm(st.session_state.messages, callbacks=[st_callback])
+        messages = st.session_state.get('messages', [])
+        response = llm(messages)
+
+        print(response)
+
+        st.session_state.messages.append(AIMessage(content=response.content))
+        st.chat_message("assistant").markdown(response)
+
+        # with st.chat_message("assistant"):
+            # st_callback = StreamlitCallbackHandler(st.container())
+            # response = llm(st.session_state.messages, callbacks=[st_callback])
+
 
 
         if test_mode:
             print("===== レスポンスのwith終了 =====")
             print(response)
 
-        st.session_state.messages.append(AIMessage(content=response.content))
+        # st.session_state.messages.append(AIMessage(content=response.content))
 
         if test_mode:
             print("====== コールバック後にメッセージをアペンド =====")
