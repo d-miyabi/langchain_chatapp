@@ -290,27 +290,28 @@ def main():
 
         try:
             with st.chat_message("assistant"):
-                # container = st.container()
-                # st_callback = StreamlitCallbackHandler(container)
-                response = llm(st.session_state.messages)
-                logging.info("APIからのレスポンス直前")
-                logging.info(messages)
+                with st.spinner('Wait for it...'):
+                    # container = st.container()
+                    # st_callback = StreamlitCallbackHandler(container)
+                    response = llm(st.session_state.messages)
+                    logging.info("APIからのレスポンス直前")
+                    logging.info(messages)
 
-                # agent_chain = create_agent_chain()
-                # response = agent_chain.run(messages, callbacks=[st_callback])
-                # st.markdown(response)
-                # st.chat_message("assistant").markdown(response)
+                    # agent_chain = create_agent_chain()
+                    # response = agent_chain.run(messages, callbacks=[st_callback])
+                    # st.markdown(response)
+                    # st.chat_message("assistant").markdown(response)
 
-                st.session_state.messages.append(AIMessage(content=response.content))
-                st.markdown(response.content)
-                # logging.info(response.content)
+                    st.session_state.messages.append(AIMessage(content=response.content))
+                    st.markdown(response.content)
+                    # logging.info(response.content)
 
-                if "では、次の問題に進みましょう" in response.content:
-                    logging.info("含まれている")
-                    logging.info(st.session_state.messages)
+                    if "では、次の問題に進みましょう" in response.content:
+                        logging.info("含まれている")
+                        logging.info(st.session_state.messages)
 
-                    st.session_state.cleared_questions.append(st.session_state.current_question_id)
-                    set_cookie()
+                        st.session_state.cleared_questions.append(st.session_state.current_question_id)
+                        set_cookie()
 
 
             # st.session_state.messages.append(AIMessage(content=response))
