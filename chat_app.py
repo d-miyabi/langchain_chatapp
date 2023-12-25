@@ -226,7 +226,7 @@ def main():
             logging.info("\n")
 
     register_cookie_to_state()
-    create_dict_from_excel()
+    # create_dict_from_excel()
     display_questions()
 
     if test_mode:
@@ -239,7 +239,7 @@ def main():
             logging.info("\n")
 
 
-    llm = select_model()
+    # llm = select_model()
     # init_messages()
 
     role = "あなたはエンジニア採用を行う面接官です。あなたの問いに対して入社希望者が回答したら、その回答に対して内容が妥当か判断してください。正しい場合は、「よく理解されていますね」と答えた上で、必要に応じて補足を行ってください。不足や誤りがある場合は、正解は提示せずに、再度考えるよう促してください"
@@ -344,4 +344,7 @@ def main():
 
 if __name__ == '__main__':
     if authenticate_user():
+        create_dict_from_excel()
+        llm = select_model()
+        
         main()
