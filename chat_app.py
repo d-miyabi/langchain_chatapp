@@ -3,6 +3,7 @@ import streamlit_authenticator as stauth
 import pandas as pd
 import extra_streamlit_components as stx
 import time
+import logging
 from datetime import datetime, timedelta
 from langchain.callbacks import StreamlitCallbackHandler
 from langchain.chat_models import ChatOpenAI
@@ -13,6 +14,7 @@ from langchain.schema import (
 )
 
 test_mode = True
+logging.basicConfig(level=logging.INFO)
 
 cookie_manager = stx.CookieManager(key="cookie")
 
@@ -84,7 +86,7 @@ def authenticate_user():
 
 
 def init_page():
-    print("===== init_page start =====")
+    logging.info("===== init_page start =====")
     st.header("面接対策100本ノック")
     st.write("このアプリは、面接時によく聞かれるWebアプリに関連する専門用語について、回答の仕方を練習するものです。")
     st.write("左のサイドバーから、取り組みたいテーマを選択してください。")
@@ -140,7 +142,7 @@ def create_dict_from_excel():
 
 def display_questions():
     if test_mode:
-        print("===== display_questions開始 =====")
+        logging.info("===== display_questions開始 =====")
 
     for item in st.session_state.questions_list:
         if item['id'] % 100 == 0:
@@ -158,7 +160,7 @@ def display_questions():
 
 def set_current_question(id):
     if test_mode:
-        print("===== set_current_question開始 =====")
+        logging.info("===== set_current_question開始 =====")
 
     st.session_state.current_question_id = id
     role = "あなたはエンジニア採用を行う面接官です。あなたの問いに対して入社希望者が回答したら、その回答に対して内容が妥当か判断してください。正しい場合は、「よく理解されていますね」と答えた上で、必要に応じて補足を行ってください。不足や誤りがある場合は、正解は提示せずに、再度考えるよう促してください"
@@ -170,7 +172,7 @@ def set_current_question(id):
     ]
 
     if test_mode:
-        print("question_dict: " + question_dict['content'])
+        logging.info("question_dict: " + question_dict['content'])
 
 def register_cookie_to_state():
     if not "cleared_questions" in st.session_state:
@@ -178,20 +180,22 @@ def register_cookie_to_state():
         if value:
             st.session_state.cleared_questions = string_to_list(value)
             if test_mode:
-                print("===== クッキーの内容 =====")
-                print(value)
+                logging.info("===== クッキーの内容 =====")
+                logging.info(value)
         else:
             st.session_state.cleared_questions = []
             if test_mode:
-                print("===== クッキーなし =====")
+                logging.info("===== クッキーなし =====")
 
 
 def main():
     if test_mode:
-        print("===== main start =====")
+        logging.info("===== main start =====")
         current_time = datetime.now()
-        print(current_time.strftime("%Y-%m-%d %H:%M:%S"))
-        print("\n")
+
+        logging.info(current_time.strftime("%Y-%m-%d %H:%M:%S"))
+        # logging.info(current_time.strftime("%Y-%m-%d %H:%M:%S"))
+        logging.info("\n")
 
     # 検証用のボタン
     if test_mode:
@@ -202,26 +206,26 @@ def main():
     init_page()
 
     if test_mode:
-        print("===== init_page終了 =====")
+        logging.info("===== init_page終了 =====")
         if "messages" in st.session_state:
-            print(st.session_state.messages)
-            print("\n")
+            logging.info(st.session_state.messages)
+            logging.info("\n")
         else:
-            print("messagesなし")
-            print("\n")
+            logging.info("messagesなし")
+            logging.info("\n")
 
     register_cookie_to_state()
     create_dict_from_excel()
     display_questions()
 
     if test_mode:
-        print("===== display_questions終了 =====")
+        logging.info("===== display_questions終了 =====")
         if "messages" in st.session_state:
-            print(st.session_state.messages)
-            print("\n")
+            logging.info(st.session_state.messages)
+            logging.info("\n")
         else:
-            print("messagesなし")
-            print("\n")
+            logging.info("messagesなし")
+            logging.info("\n")
 
 
     llm = select_model()
@@ -230,8 +234,8 @@ def main():
     role = "あなたはエンジニア採用を行う面接官です。あなたの問いに対して入社希望者が回答したら、その回答に対して内容が妥当か判断してください。正しい場合は、「よく理解されていますね」と答えた上で、必要に応じて補足を行ってください。不足や誤りがある場合は、正解は提示せずに、再度考えるよう促してください"
 
     if "messages" not in st.session_state:
-        print("messagesは存在しない")
-        print("\n")
+        logging.info("messagesは存在しない")
+        logging.info("\n")
 
         st.session_state.messages = [
             SystemMessage(content=role),
@@ -252,8 +256,8 @@ def main():
     user_input = st.chat_input("こちらに回答を入力してください")
     if user_input:
         if test_mode:
-            print("===== ユーザー入力あり =====")
-            print("\n")
+            logging.info("===== ユーザー入力あり =====")
+            logging.info("\n")
 
         st.session_state.messages.append(HumanMessage(content=user_input))
         st.chat_message("user").markdown(user_input)
@@ -261,14 +265,14 @@ def main():
         messages = st.session_state.get('messages', [])
 
         if test_mode:
-            print("===== api使用直前 =====")
-            print('messages')
+            logging.info("===== api使用直前 =====")
+            logging.info(messages)
 
         response = llm(messages)
 
         if test_mode:
-            print("===== api使用直後 =====")
-            print(response)
+            logging.info("===== api使用直後 =====")
+            logging.info(response)
 
         st.session_state.messages.append(AIMessage(content=response.content))
         st.chat_message("assistant").markdown(response.content)
@@ -280,30 +284,30 @@ def main():
 
 
         if test_mode:
-            print("===== レスポンスのwith終了 =====")
-            print(response)
+            logging.info("===== レスポンスのwith終了 =====")
+            logging.info(response)
 
         # st.session_state.messages.append(AIMessage(content=response.content))
 
         if test_mode:
-            print("====== コールバック後にメッセージをアペンド =====")
-            print(st.session_state.messages)
-            print("\n")
+            logging.info("====== コールバック後にメッセージをアペンド =====")
+            logging.info(st.session_state.messages)
+            logging.info("\n")
 
         last_response = st.session_state.messages[-1]
 
         if test_mode:
-            print("===== 最後のメッセージ =====")
-            print(last_response)
-            print('\n')
+            logging.info("===== 最後のメッセージ =====")
+            logging.info(last_response)
+            logging.info('\n')
 
 
         if "よく理解されていますね" in last_response.content:
-            print("含まれている")
+            logging.info("含まれている")
             st.session_state.cleared_questions.append(st.session_state.current_question_id)
             set_cookie()
-            print("ifおわり")
-            print(st.session_state.messages)
+            logging.info("ifおわり")
+            logging.info(st.session_state.messages)
 
 
 if __name__ == '__main__':
