@@ -285,14 +285,16 @@ def main():
                 logging.info("含まれている")
                 logging.info(st.session_state.messages)
 
-                st.session_state.cleared_questions.append(st.session_state.current_question_id)
-                set_cookie()
+                # st.session_state.cleared_questions.append(st.session_state.current_question_id)
+                # set_cookie()
+
+        st.session_state.messages.append(AIMessage(content=response.content))
 
         if test_mode:
             logging.info("===== レスポンスのwith終了 =====")
             logging.info(response)
 
-        st.session_state.messages.append(AIMessage(content=response.content))
+
 
         if test_mode:
             logging.info("====== コールバック後にメッセージをアペンド =====")
