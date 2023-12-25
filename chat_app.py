@@ -281,6 +281,8 @@ def main():
             st_callback = StreamlitCallbackHandler(st.container())
             response = llm(st.session_state.messages, callbacks=[st_callback])
 
+            logging.log(response)
+
             if "では、次の問題に進みましょう" in response.content:
                 logging.info("含まれている")
                 logging.info(st.session_state.messages)
