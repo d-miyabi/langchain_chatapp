@@ -4,6 +4,8 @@ import pandas as pd
 import extra_streamlit_components as stx
 import time
 import logging
+import traceback
+from langchain.agents import AgentType, initialize_agent, load_tools
 from datetime import datetime, timedelta
 from langchain.callbacks import StreamlitCallbackHandler
 from langchain.chat_models import ChatOpenAI
@@ -180,6 +182,22 @@ def register_cookie_to_state():
                 logging.info("===== クッキーなし =====")
 
 
+
+
+
+def create_agent_chain():
+    chat = ChatOpenAI(
+        model_name='gpt-4',
+        temperature=0,
+        streaming=True,
+)
+    tools = load_tools(["ddg-search"])
+    return initialize_agent(tools, chat, agent=AgentType.OPENAI_FUNCTIONS)
+
+
+
+
+
 def main():
     if test_mode:
         logging.info("===== main start =====")
@@ -271,31 +289,37 @@ def main():
 
         try:
             with st.chat_message("assistant"):
-                st_callback = StreamlitCallbackHandler(st.container())
+                container = st.container()
+                st_callback = StreamlitCallbackHandler(container)
                 # response = llm(st.session_state.messages, callbacks=[st_callback])
                 logging.info("APIからのレスポンス直前")
                 logging.info(messages)
-                response = llm(messages, callbacks=[st_callback])
+
+                agent_chain = create_agent_chain()
+                response = agent_chain.run(messages, callbacks=[st_callback])
+                # st.markdown(response)
+                # st.chat_message("assistant").markdown(response)
 
 
-                logging.info(response.content)
 
-                if "では、次の問題に進みましょう" in response.content:
+                # logging.info(response.content)
+
+                if "では、次の問題に進みましょう" in response:
                     logging.info("含まれている")
                     logging.info(st.session_state.messages)
 
                     # st.session_state.cleared_questions.append(st.session_state.current_question_id)
                     # set_cookie()
 
-            
-            st.session_state.messages.append(AIMessage(content=response.content))
+
+            # st.session_state.messages.append(AIMessage(content=response))
 
         except Exception as e:
             logging.error(f"エラーが発生しました: {e}")
-            logging.error(traceback.format_exc())  # スタックトレースの詳細をログに記録
+            # logging.error(traceback.format_exc())  # スタックトレースの詳細をログに記録
 
-
-        st.session_state.messages.append(AIMessage(content=response.content))
+        st.chat_message("assistant").markdown(response)
+        st.session_state.messages.append(AIMessage(content=response))
 
         if test_mode:
             logging.info("===== レスポンスのwith終了 =====")
