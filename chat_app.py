@@ -202,6 +202,26 @@ def create_agent_chain():
 def main():
     if test_mode:
         logging.info("===== main start =====")
+
+        if "cleared_questions" in st.session_state:
+            logging.info(st.session_state.cleared_questions)
+        else:
+            logging.info("cleared_questionsはありません")
+
+        if "messages" in st.session_state:
+            logging.info(st.session_state.messages)
+        else:
+            logging.info("messagesはありません")
+
+
+        # logging.info(st.session_state.messages)
+        # logging.info(st.session_state.questions_list)
+ 
+
+
+
+
+
         current_time = datetime.now()
 
         logging.info(current_time.strftime("%Y-%m-%d %H:%M:%S"))
