@@ -299,7 +299,7 @@ def main():
             st.markdown(user_input)
 
 
-            messages = st.session_state.messages
+        messages = st.session_state.messages
 
         if test_mode:
             logging.info("===== api使用直前 =====")
@@ -314,40 +314,38 @@ def main():
         # st.session_state.messages.append(AIMessage(content=response.content))
         # st.chat_message("assistant").markdown(response.content)
 
-        try:
-            with st.chat_message("assistant"):
-                with st.spinner('Wait for it...'):
-                    # container = st.container()
-                    # st_callback = StreamlitCallbackHandler(container)
-                    response = llm(st.session_state.messages)
-                    logging.info("APIからのレスポンス直前")
-                    logging.info(messages)
 
-                    # agent_chain = create_agent_chain()
-                    # response = agent_chain.run(messages, callbacks=[st_callback])
-                    # st.markdown(response)
-                    # st.chat_message("assistant").markdown(response)
+        with st.chat_message("assistant"):
+            with st.spinner('Wait for it...'):
+                # container = st.container()
+                # st_callback = StreamlitCallbackHandler(container)
+                response = llm(st.session_state.messages)
+                logging.info("APIからのレスポンス直前")
+                logging.info(messages)
 
-                    st.session_state.messages.append(AIMessage(content=response.content))
-                    st.markdown(response.content)
-                    # logging.info(response.content)
+                # agent_chain = create_agent_chain()
+                # response = agent_chain.run(messages, callbacks=[st_callback])
+                # st.markdown(response)
+                # st.chat_message("assistant").markdown(response)
 
-                    if "では、次の問題に進みましょう" in response.content:
-                        logging.info("正解の場合")
+                st.session_state.messages.append(AIMessage(content=response.content))
+                st.markdown(response.content)
+                # logging.info(response.content)
 
-                        logging.info("含まれている")
-                        logging.info(st.session_state.messages)
+                if "では、次の問題に進みましょう" in response.content:
+                    logging.info("正解の場合")
 
-                        if not st.session_state.current_question_id in st.session_state.cleared_questions:
-                            st.session_state.cleared_questions.append(st.session_state.current_question_id)
-                            set_cookie()
+                    logging.info("含まれている")
+                    logging.info(st.session_state.messages)
+
+                    if not st.session_state.current_question_id in st.session_state.cleared_questions:
+                        st.session_state.cleared_questions.append(st.session_state.current_question_id)
+                        set_cookie()
 
 
-            # st.session_state.messages.append(AIMessage(content=response))
+        # st.session_state.messages.append(AIMessage(content=response))
 
-        except Exception as e:
-            logging.error(f"エラーが発生しました: {e}")
-            # logging.error(traceback.format_exc())  # スタックトレースの詳細をログに記録
+
 
         # st.chat_message("assistant").markdown(response.content)
         # st.session_state.messages.append(AIMessage(content=response.content))
