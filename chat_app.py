@@ -260,12 +260,18 @@ def main():
 
         st.session_state.messages.append(AIMessage(content=response.content))
 
-        print("finish")
+        if test_mode:
+            print("====== コールバック後にメッセージをアペンド =====")
+            print(st.session_state.messages)
+            print("\n")
 
         last_response = st.session_state.messages[-1]
 
-        print(last_response)
-        print("last")
+        if test_mode:
+            print("===== 最後のメッセージ =====")
+            print(last_response)
+            print('\n')
+
 
         if "よく理解されていますね" in last_response.content:
             print("含まれている")
