@@ -301,9 +301,9 @@ def main():
 
         messages = st.session_state.messages
 
-        if test_mode:
-            logging.info("===== api使用直前 =====")
-            logging.info(messages)
+        # if test_mode:
+        #     logging.info("===== api使用直前 =====")
+        #     logging.info(messages)
 
         # response = llm(messages)
 
@@ -317,8 +317,10 @@ def main():
 
         with st.chat_message("assistant"):
             with st.spinner('Wait for it...'):
-                # container = st.container()
-                # st_callback = StreamlitCallbackHandler(container)
+
+            # container = st.container()
+            # st_callback = StreamlitCallbackHandler(container)
+                logging.info("llm実行直前")
                 response = llm(st.session_state.messages)
                 logging.info("APIからのレスポンス直前")
                 logging.info(messages)
