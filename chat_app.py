@@ -98,6 +98,7 @@ def init_page():
     st.write("③ 回答が十分でない場合は追加を求められので、再度回答を行なってください。合格の場合は、「よく理解されていますね」と伝えられます。")
 
 
+
 def init_messages():
     role = "あなたはエンジニア採用を行う面接官です。あなたの問いに対して入社希望者が回答したら、その回答に対して内容が妥当か判断してください。正しい場合は、「よく理解されていますね」と答え、返事の最後に「次の問題に進みましょう」と必ず言ってください。また、必要に応じて補足を行ってください。不足や誤りがある場合は、正解は提示せずに、再度考えるよう促してください"
 
@@ -123,20 +124,22 @@ def select_model():
 
 
 def create_dict_from_excel():
-    # Excelファイルを読み込む
-    df = pd.read_excel('./questions.xlsx')
+    file_path = './questions.xlsx'
+    df = pd.read_excel(file_path)
 
-    # 辞書のリストを作成
-    list_of_dicts = [
-        {
-            "id": int(row["ID"]),
-            "title": row["タイトル"],
-            "content": row["内容"]
-        }
-        for _, row in df.iterrows()
-    ]
+    # Transform the DataFrame into the desired dictionary format
+    dict_list = []
+    for index, row in df.iterrows():
+        # Check if the ID is not NaN and if the content is a string
+        if pd.notna(row['ID']) and isinstance(row['内容'], str):
+            content_with_newlines = row['内容'].replace('\r\n', '\n').strip()
+            dict_list.append({
+                "id": int(row['ID']),
+                "title": row['タイトル'],
+                "content": content_with_newlines
+            })
 
-    st.session_state.questions_list = list_of_dicts
+    st.session_state.questions_list = dict_list
 
 
 def display_questions():
