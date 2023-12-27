@@ -297,7 +297,7 @@ def main():
                         if response.content:
                             break
 
-                    # time.sleep(5)
+                    logging.info(response.content)
 
                     if test_mode:
                         logging.info("APIからのレスポンス直後")
