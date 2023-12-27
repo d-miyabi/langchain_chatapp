@@ -120,9 +120,9 @@ def find_dictionary_by_id(id_to_find):
 
 def select_model():
     model_name = "gpt-4"
-    temperature = 0
+    temperature = 0.7
     # return ChatOpenAI(temperature=temperature, model_name=model_name, streaming=True)
-    return ChatOpenAI(temperature=temperature, model_name=model_name, )
+    return ChatOpenAI(temperature=temperature, model_name=model_name)
 
 
 def create_dict_from_excel():
@@ -296,7 +296,7 @@ def main():
 
                     if test_mode:
                         logging.info("APIからのレスポンス直後")
-                        logging.info(messages)
+                        # logging.info(response.content)
 
                     # container = st.container()
                     # st_callback = StreamlitCallbackHandler(container)
@@ -309,7 +309,9 @@ def main():
 
                     st.session_state.messages.append(AIMessage(content=response.content))
                     st.markdown(response.content)
-                    response.content = ""
+                    # response.content = ""
+
+                    logging.info(response)
 
             # ユーザーの回答が正しい場合の分岐
             if "では、次の問題に進みましょう" in response.content:
