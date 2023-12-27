@@ -143,6 +143,10 @@ def create_dict_from_excel():
 
     st.session_state.questions_list = dict_list
 
+    if test_mode:
+        logging.info("===== dict_list =====")
+        logging.info(dict_list)
+
 
 def display_questions():
     if test_mode:
@@ -240,6 +244,7 @@ def main():
         if st.button("Delete"):
             cookie_manager.delete("cleared_questions")
 
+
         if st.button("Delete session"):
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
@@ -301,9 +306,9 @@ def main():
 
         response = ""
 
-        with st.chat_message("assistant"):
-            with st.spinner('考え中です...'):
-
+        with st.spinner('考え中です...'):
+            with st.chat_message("assistant"):
+        
                 if test_mode:
                     logging.info("llm実行直前")
 
