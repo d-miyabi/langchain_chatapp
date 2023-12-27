@@ -317,6 +317,10 @@ def main():
                     # response.content = ""
 
                     # logging.info(response.content)
+                    logging.info("アペンド後")
+                    logging.info(st.session_state.messages)
+
+
                     response.content = ""
 
             # ユーザーの回答が正しい場合の分岐
