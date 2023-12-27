@@ -292,11 +292,13 @@ def main():
                     if test_mode:
                         logging.info("llm実行直前")
 
-                    response = llm(st.session_state.messages)
+                    while True:
+                        response = llm(st.session_state.messages)
+                        if response.content:
+                            break
 
+                    # time.sleep(5)
 
-                    time.sleep(5)
-                    
                     if test_mode:
                         logging.info("APIからのレスポンス直後")
                         # logging.info(response.content)
@@ -314,7 +316,8 @@ def main():
                     st.markdown(response.content)
                     # response.content = ""
 
-                    logging.info(response)
+                    # logging.info(response.content)
+                    response.content = ""
 
             # ユーザーの回答が正しい場合の分岐
             if "では、次の問題に進みましょう" in response.content:
