@@ -17,9 +17,10 @@ from langchain.schema import (
 
 
 # 初期設定
-test_mode = True
+test_mode = False
 logging.basicConfig(level=logging.INFO)
 cookie_manager = stx.CookieManager(key="cookie")
+role = "あなたは優秀な家庭教師です。あなたの問いに対して生徒が回答したら、内容が妥当か判断してください。正しい場合は、「よく理解されていますね」と答え、返事の最後に「では、次の問題に進みましょう！」と必ず言ってください。また、必要に応じて補足の解説を行ってください。回答に不足や誤りがある場合は、正解は提示せずに、再度考えるよう促してください。ヒントが欲しいと言われたら、直接解答を教えることはせず、解答に至るようなヒントを提示してください。ヒントは、直接答えがわかってしまう内容ではなく、思考のきっかけを与えるだけにとどめてください。また、いつでも生徒がポジティブに取り組めるよう励ます言葉をかけてください。"
 
 
 def get_expire_date():
@@ -100,7 +101,7 @@ def init_page():
 
 
 def init_messages():
-    role = "あなたはエンジニア採用を行う面接官です。あなたの問いに対して入社希望者が回答したら、その回答に対して内容が妥当か判断してください。正しい場合は、「よく理解されていますね」と答え、返事の最後に「次の問題に進みましょう」と必ず言ってください。また、必要に応じて補足を行ってください。不足や誤りがある場合は、正解は提示せずに、再度考えるよう促してください"
+    # role = "あなたは優秀な家庭教師です。あなたの問いに対して生徒が回答したら、内容が妥当か判断してください。正しい場合は、「よく理解されていますね」と答え、返事の最後に「次の問題に進みましょう」と必ず言ってください。また、必要に応じて補足を行ってください。不足や誤りがある場合は、正解は提示せずに、再度考えるよう促してください。ヒントが欲しいと言われたら、直接解答を教えることはせず、解答に至るようなヒントを提示してください。また、いつでも生徒がポジティブに取り組めるよう励ます言葉をかけてください。"
 
     if "messages" not in st.session_state:
         st.session_state.messages = [
@@ -165,7 +166,6 @@ def set_current_question(id):
         logging.info("===== set_current_question開始 =====")
 
     st.session_state.current_question_id = id
-    role = "あなたはエンジニア採用を行う面接官です。あなたの問いに対して入社希望者が回答したら、その回答に対して内容が妥当か判断してください。正しい場合は、「よく理解されていますね」と答え、返事の最後に「では、次の問題に進みましょう」と必ず言ってください。また、必要に応じて補足を行ってください。不足や誤りがある場合は、正解は提示せずに、再度考えるよう促してください"
 
     question_dict = find_dictionary_by_id(id)
     st.session_state.messages = [
@@ -255,17 +255,9 @@ def main():
         else:
             logging.info("messagesなし")
             logging.info("\n")
-
-    role = "あなたはエンジニア採用を行う面接官です。あなたの問いに対して入社希望者が回答したら、その回答に対して内容が妥当か判断してください。正しい場合は、「よく理解されていますね」と答えた上で、必要に応じて補足を行ってください。不足や誤りがある場合は、正解は提示せずに、再度考えるよう促してください"
-
-    if "messages" not in st.session_state:
-        logging.info("messagesは存在しない")
-        logging.info("\n")
-
-        st.session_state.messages = [
-            SystemMessage(content=role),
-        ]
     
+    init_messages()
+
     messages = st.session_state.messages
     for message in messages:
         if isinstance(message, AIMessage):
@@ -302,7 +294,7 @@ def main():
                     response = llm(st.session_state.messages)
 
                     if test_mode:
-                        logging.info("APIからのレスポンス直前")
+                        logging.info("APIからのレスポンス直後")
                         logging.info(messages)
 
                     # container = st.container()
@@ -314,19 +306,19 @@ def main():
                     # st.markdown(response)
                     # st.chat_message("assistant").markdown(response)
 
-                    st.session_state.messages.append(AIMessage(content=response.content))
                     st.markdown(response.content)
+                st.session_state.messages.append(AIMessage(content=response.content))
 
-                    # ユーザーの回答が正しい場合の分岐
-                    if "では、次の問題に進みましょう" in response.content:
-                        if test_mode:
-                            logging.info("正解の場合")
-                            logging.info(st.session_state.messages)
+                # ユーザーの回答が正しい場合の分岐
+                if "では、次の問題に進みましょう" in response.content:
+                    if test_mode:
+                        logging.info("正解の場合")
+                        logging.info(st.session_state.messages)
 
-                        # 回答が正しい場合、問題idを追加
-                        if not st.session_state.current_question_id in st.session_state.cleared_questions:
-                            st.session_state.cleared_questions.append(st.session_state.current_question_id)
-                            set_cookie()
+                    # 回答が正しい場合、問題idを追加
+                    if not st.session_state.current_question_id in st.session_state.cleared_questions:
+                        st.session_state.cleared_questions.append(st.session_state.current_question_id)
+                        set_cookie()
 
 
         # st.session_state.messages.append(AIMessage(content=response))
