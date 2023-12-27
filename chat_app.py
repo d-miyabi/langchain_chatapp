@@ -18,7 +18,7 @@ from langchain.schema import (
 
 # 初期設定
 test_mode = True
-del_mode = False
+del_mode = True
 logging.basicConfig(level=logging.INFO)
 cookie_manager = stx.CookieManager(key="cookie")
 role = "あなたは優秀な家庭教師です。あなたの問いに対して生徒が回答したら、内容が妥当か判断してください。正しい場合は、「よく理解されていますね」と答え、返事の最後に「では、次の問題に進みましょう！」と必ず言ってください。また、必要に応じて補足の解説を行ってください。回答に不足や誤りがある場合は、正解は提示せずに、再度考えるよう促してください。ヒントが欲しいと言われたら、直接解答を教えることはせず、解答に至るようなヒントを提示してください。ヒントは、直接答えがわかってしまう内容ではなく、思考のきっかけを与えるだけにとどめてください。また、いつでも生徒がポジティブに取り組めるよう励ます言葉をかけてください。"
@@ -307,18 +307,17 @@ def main():
                 if test_mode:
                     logging.info("llm実行直前")
 
-                # while True:
-                #     response = chat(st.session_state.messages)
-                #     logging.info(type(response))
-                #     logging.info("response")
-                #     if response.content:
-                #         break
-
-                response = chat(st.session_state.messages)
-
-                # logging.info(response.content)
-                # logging.info(response)
-
+                try:
+                    response = chat(st.session_state.messages)
+                except TimeoutError:
+                    # タイムアウトエラーの処理
+                    print("タイムアウトが発生しました。後でもう一度試してください。")
+                except ConnectionError:
+                    # 通信エラーの処理
+                    print("通信エラーが発生しました。ネットワーク接続を確認してください。")
+                except Exception as e:
+                    # その他の一般的なエラーの処理
+                    print(f"予期せぬエラーが発生しました: {e}")
 
                 if test_mode:
                     logging.info("APIからのレスポンス直後")
@@ -378,5 +377,4 @@ if __name__ == '__main__':
     if authenticate_user():
         create_dict_from_excel()
         chat = select_model()
-        
         main()
