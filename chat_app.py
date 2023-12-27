@@ -17,7 +17,7 @@ from langchain.schema import (
 
 
 # 初期設定
-test_mode = False
+test_mode = True
 logging.basicConfig(level=logging.INFO)
 cookie_manager = stx.CookieManager(key="cookie")
 
@@ -276,65 +276,66 @@ def main():
                 st.markdown(message.content)
 
     # ユーザーの入力を監視
-    user_input = st.chat_input("こちらに回答を入力してください")
-    if user_input:
-        if test_mode:
-            logging.info("===== ユーザー入力あり =====")
-            logging.info("\n")
+    if "current_question_id" in st.session_state:
+        user_input = st.chat_input("こちらに回答を入力してください")
+        if user_input:
+            if test_mode:
+                logging.info("===== ユーザー入力あり =====")
+                logging.info("\n")
 
-        with st.chat_message("user"):
-            logging.info("セッション追加前")
-            logging.info(st.session_state.messages)
-            st.session_state.messages.append(HumanMessage(content=user_input))
+            with st.chat_message("user"):
+                logging.info("セッション追加前")
+                logging.info(st.session_state.messages)
+                st.session_state.messages.append(HumanMessage(content=user_input))
 
-            logging.info("セッション追加後")
-            logging.info(st.session_state.messages)
+                logging.info("セッション追加後")
+                logging.info(st.session_state.messages)
 
-            st.markdown(user_input)
+                st.markdown(user_input)
 
-        with st.chat_message("assistant"):
-            with st.spinner('考え中です...'):
+            with st.chat_message("assistant"):
+                with st.spinner('考え中です...'):
 
-                if test_mode:
-                    logging.info("llm実行直前")
-
-                response = llm(st.session_state.messages)
-
-                if test_mode:
-                    logging.info("APIからのレスポンス直前")
-                    logging.info(messages)
-
-                # container = st.container()
-                # st_callback = StreamlitCallbackHandler(container)
-
-
-                # agent_chain = create_agent_chain()
-                # response = agent_chain.run(messages, callbacks=[st_callback])
-                # st.markdown(response)
-                # st.chat_message("assistant").markdown(response)
-
-                st.session_state.messages.append(AIMessage(content=response.content))
-                st.markdown(response.content)
-
-                # ユーザーの回答が正しい場合の分岐
-                if "では、次の問題に進みましょう" in response.content:
                     if test_mode:
-                        logging.info("正解の場合")
-                        logging.info(st.session_state.messages)
+                        logging.info("llm実行直前")
 
-                    # 回答が正しい場合、問題idを追加
-                    if not st.session_state.current_question_id in st.session_state.cleared_questions:
-                        st.session_state.cleared_questions.append(st.session_state.current_question_id)
-                        set_cookie()
+                    response = llm(st.session_state.messages)
+
+                    if test_mode:
+                        logging.info("APIからのレスポンス直前")
+                        logging.info(messages)
+
+                    # container = st.container()
+                    # st_callback = StreamlitCallbackHandler(container)
+
+
+                    # agent_chain = create_agent_chain()
+                    # response = agent_chain.run(messages, callbacks=[st_callback])
+                    # st.markdown(response)
+                    # st.chat_message("assistant").markdown(response)
+
+                    st.session_state.messages.append(AIMessage(content=response.content))
+                    st.markdown(response.content)
+
+                    # ユーザーの回答が正しい場合の分岐
+                    if "では、次の問題に進みましょう" in response.content:
+                        if test_mode:
+                            logging.info("正解の場合")
+                            logging.info(st.session_state.messages)
+
+                        # 回答が正しい場合、問題idを追加
+                        if not st.session_state.current_question_id in st.session_state.cleared_questions:
+                            st.session_state.cleared_questions.append(st.session_state.current_question_id)
+                            set_cookie()
 
 
         # st.session_state.messages.append(AIMessage(content=response))
         # st.chat_message("assistant").markdown(response.content)
         # st.session_state.messages.append(AIMessage(content=response.content))
 
-        if test_mode:
-            logging.info("===== レスポンスのwith終了 =====")
-            logging.info(response.content)
+            if test_mode:
+                logging.info("===== レスポンスのwith終了 =====")
+                logging.info(response.content)
 
 
         # last_response = st.session_state.messages[-1]
