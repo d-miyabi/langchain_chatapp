@@ -97,12 +97,12 @@ def init_page():
     st.markdown("**使い方**")
     st.write("① 左のサイドバーから、取り組みたいテーマを選択してください。クリックすると面接官からの質問が行われます。")
     st.write("② 質問に対して回答を行なってください。")
-    st.write("③ 回答が十分でない場合は追加を求められので、再度回答を行なってください。合格の場合は、「よく理解されていますね」と伝えられます。")
+    st.write("③ 回答が十分でない場合は追加を求められので、再度回答を行なってください。合格の場合は、「では、次の問題に進みましょう！」と伝えられます。")
 
 
 
 def init_messages():
-    # role = "あなたは優秀な家庭教師です。あなたの問いに対して生徒が回答したら、内容が妥当か判断してください。正しい場合は、「よく理解されていますね」と答え、返事の最後に「次の問題に進みましょう」と必ず言ってください。また、必要に応じて補足を行ってください。不足や誤りがある場合は、正解は提示せずに、再度考えるよう促してください。ヒントが欲しいと言われたら、直接解答を教えることはせず、解答に至るようなヒントを提示してください。また、いつでも生徒がポジティブに取り組めるよう励ます言葉をかけてください。"
+    # role = "あなたは優秀な家庭教師です。あなたの問いに対して生徒が回答したら、内容が妥当か判断してください。正しい場合は、必ず最初に「よく理解されていますね」と答え、返事の最後に「次の問題に進みましょう」と必ず言ってください。また、必要に応じて補足を行ってください。不足や誤りがある場合は、正解は提示せずに、再度考えるよう促してください。ヒントが欲しいと言われたら、直接解答を教えることはせず、解答に至るようなヒントを提示してください。また、いつでも生徒がポジティブに取り組めるよう励ます言葉をかけてください。"
 
     if "messages" not in st.session_state:
         st.session_state.messages = [
@@ -206,6 +206,17 @@ def create_agent_chain():
     return initialize_agent(tools, chat, agent=AgentType.OPENAI_FUNCTIONS)
 
 
+def display_messages():
+    messages = st.session_state.messages
+    for message in messages:
+        if isinstance(message, AIMessage):
+            with st.chat_message('assistant'):
+                st.markdown(message.content)
+        elif isinstance(message, HumanMessage):
+            with st.chat_message('user'):
+                st.markdown(message.content)
+
+
 def main():
     if test_mode:
         logging.info("===== main start =====")
@@ -259,97 +270,113 @@ def main():
     
     init_messages()
 
-    messages = st.session_state.messages
-    for message in messages:
-        if isinstance(message, AIMessage):
-            with st.chat_message('assistant'):
-                st.markdown(message.content)
-        elif isinstance(message, HumanMessage):
-            with st.chat_message('user'):
-                st.markdown(message.content)
+    if test_mode:
+        logging.info("===== display_messages開始 =====")
+
+    display_messages()
+
+    if test_mode:
+        logging.info("===== display_messages終了 =====")
+
 
     # ユーザーの入力を監視
-    if "current_question_id" in st.session_state:
-        user_input = st.chat_input("こちらに回答を入力してください")
-        if user_input:
-            if test_mode:
-                logging.info("===== ユーザー入力あり =====")
-                logging.info("\n")
+    # if "current_question_id" in st.session_state:
+    user_input = st.chat_input("こちらに回答を入力してください")
+    if user_input:
+        if test_mode:
+            logging.info("===== ユーザー入力あり =====")
+            logging.info("\n")
 
-            with st.chat_message("user"):
-                logging.info("セッション追加前")
-                logging.info(st.session_state.messages)
-                st.session_state.messages.append(HumanMessage(content=user_input))
+        with st.chat_message("user"):
+            logging.info("セッション追加前")
+            logging.info(st.session_state.messages)
+            # st.session_state.messages.append(HumanMessage(content=user_input))
 
-                logging.info("セッション追加後")
-                logging.info(st.session_state.messages)
+            logging.info("セッション追加後")
+            logging.info(st.session_state.messages)
 
-                st.markdown(user_input)
+            st.markdown(user_input)
 
-            with st.chat_message("assistant"):
-                with st.spinner('考え中です...'):
+        st.session_state.messages.append(HumanMessage(content=user_input))
 
-                    if test_mode:
-                        logging.info("llm実行直前")
+        response = ""
 
-                    while True:
-                        response = llm(st.session_state.messages)
-                        if response.content:
-                            break
+        with st.chat_message("assistant"):
+            with st.spinner('考え中です...'):
 
-                    logging.info(response.content)
-
-                    if test_mode:
-                        logging.info("APIからのレスポンス直後")
-                        # logging.info(response.content)
-
-                    # container = st.container()
-                    # st_callback = StreamlitCallbackHandler(container)
-
-
-                    # agent_chain = create_agent_chain()
-                    # response = agent_chain.run(messages, callbacks=[st_callback])
-                    # st.markdown(response)
-                    # st.chat_message("assistant").markdown(response)
-
-                    st.session_state.messages.append(AIMessage(content=response.content))
-                    st.markdown(response.content)
-                    # response.content = ""
-
-                    # logging.info(response.content)
-                    logging.info("アペンド後")
-                    logging.info(st.session_state.messages)
-
-
-                    response.content = ""
-
-            # ユーザーの回答が正しい場合の分岐
-            if "では、次の問題に進みましょう" in response.content:
                 if test_mode:
-                    logging.info("正解の場合")
-                    logging.info(st.session_state.messages)
+                    logging.info("llm実行直前")
 
-                # 回答が正しい場合、問題idを追加
-                if not st.session_state.current_question_id in st.session_state.cleared_questions:
-                    st.session_state.cleared_questions.append(st.session_state.current_question_id)
-                    set_cookie()
+                # while True:
+                #     response = chat(st.session_state.messages)
+                #     logging.info(type(response))
+                #     logging.info("response")
+                #     if response.content:
+                #         break
+
+                response = chat(st.session_state.messages)
+
+                # logging.info(response.content)
+                # logging.info(response)
 
 
-        # st.session_state.messages.append(AIMessage(content=response))
-        # st.chat_message("assistant").markdown(response.content)
-        # st.session_state.messages.append(AIMessage(content=response.content))
+                if test_mode:
+                    logging.info("APIからのレスポンス直後")
+                    # logging.info(response.content)
 
+                # container = st.container()
+                # st_callback = StreamlitCallbackHandler(container)
+
+
+                # agent_chain = create_agent_chain()
+                # response = agent_chain.run(messages, callbacks=[st_callback])
+                # st.markdown(response)
+                # st.chat_message("assistant").markdown(response)
+
+                # st.session_state.messages.append(AIMessage(content=response.content))
+                # st.markdown(response.content)
+                # response.content = ""
+
+                # logging.info(response.content)
+                # logging.info("アペンド後")
+                # logging.info(st.session_state.messages)
+
+
+                # response.content = ""
+                # st.session_state.messages.append(AIMessage(content=response.content))
+                st.markdown(response.content)
+
+        st.session_state.messages.append(AIMessage(content=response.content))
+
+        # ユーザーの回答が正しい場合の分岐
+        if "では、次の問題に進みましょう" in response.content:
             if test_mode:
-                logging.info("===== レスポンスのwith終了 =====")
-                logging.info(response.content)
+                logging.info("正解の場合")
+                logging.info(st.session_state.messages)
+
+            # 回答が正しい場合、問題idを追加
+            if not st.session_state.current_question_id in st.session_state.cleared_questions:
+                st.session_state.cleared_questions.append(st.session_state.current_question_id)
+                set_cookie()
+
+        user_input = ""
 
 
-        # last_response = st.session_state.messages[-1]
+    # st.session_state.messages.append(AIMessage(content=response))
+    # st.chat_message("assistant").markdown(response.content)
+    # st.session_state.messages.append(AIMessage(content=response.content))
+
+        if test_mode:
+            logging.info("===== レスポンスのwith終了 =====")
+            logging.info(response.content)
+
+
+    # last_response = st.session_state.messages[-1]
 
 
 if __name__ == '__main__':
     if authenticate_user():
         create_dict_from_excel()
-        llm = select_model()
+        chat = select_model()
         
         main()
