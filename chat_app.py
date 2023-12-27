@@ -306,19 +306,19 @@ def main():
                     # st.markdown(response)
                     # st.chat_message("assistant").markdown(response)
 
+                    st.session_state.messages.append(AIMessage(content=response.content))
                     st.markdown(response.content)
-                st.session_state.messages.append(AIMessage(content=response.content))
 
-                # ユーザーの回答が正しい場合の分岐
-                if "では、次の問題に進みましょう" in response.content:
-                    if test_mode:
-                        logging.info("正解の場合")
-                        logging.info(st.session_state.messages)
+            # ユーザーの回答が正しい場合の分岐
+            if "では、次の問題に進みましょう" in response.content:
+                if test_mode:
+                    logging.info("正解の場合")
+                    logging.info(st.session_state.messages)
 
-                    # 回答が正しい場合、問題idを追加
-                    if not st.session_state.current_question_id in st.session_state.cleared_questions:
-                        st.session_state.cleared_questions.append(st.session_state.current_question_id)
-                        set_cookie()
+                # 回答が正しい場合、問題idを追加
+                if not st.session_state.current_question_id in st.session_state.cleared_questions:
+                    st.session_state.cleared_questions.append(st.session_state.current_question_id)
+                    set_cookie()
 
 
         # st.session_state.messages.append(AIMessage(content=response))
