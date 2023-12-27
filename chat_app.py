@@ -294,6 +294,9 @@ def main():
 
                     response = llm(st.session_state.messages)
 
+
+                    time.sleep(5)
+                    
                     if test_mode:
                         logging.info("APIからのレスポンス直後")
                         # logging.info(response.content)
