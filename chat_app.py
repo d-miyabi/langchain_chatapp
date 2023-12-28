@@ -314,31 +314,31 @@ def main():
 
         st.session_state.messages.append(HumanMessage(content=user_input))
 
-        response = ""
+        with st.spinner('考え中です...'):    
+            try:
+                response = chat(st.session_state.messages)
+            except TimeoutError:
+                # タイムアウトエラーの処理
+                print("タイムアウトが発生しました。後でもう一度試してください。")
+            except ConnectionError:
+                # 通信エラーの処理
+                print("通信エラーが発生しました。ネットワーク接続を確認してください。")
+            except Exception as e:
+                # その他の一般的なエラーの処理
+                print(f"予期せぬエラーが発生しました: {e}")
 
         with st.chat_message("assistant"):
-            with st.spinner('考え中です...'):    
-                if test_mode:
-                    logging.info("llm実行直前")
+            st.markdown(response.content)
 
-                try:
-                    response = chat(st.session_state.messages)
-                    st.markdown(response.content)
-                    st.session_state.messages.append(AIMessage(content=response.content))
-                except TimeoutError:
-                    # タイムアウトエラーの処理
-                    print("タイムアウトが発生しました。後でもう一度試してください。")
-                except ConnectionError:
-                    # 通信エラーの処理
-                    print("通信エラーが発生しました。ネットワーク接続を確認してください。")
-                except Exception as e:
-                    # その他の一般的なエラーの処理
-                    print(f"予期せぬエラーが発生しました: {e}")
+            if test_mode:
+                logging.info("llm実行直前")
 
-                if test_mode:
-                    logging.info("APIからのレスポンス直後")
-                    # logging.info(response.content)
+            if test_mode:
+                logging.info("APIからのレスポンス直後")
+                # logging.info(response.content)
 
+        st.session_state.messages.append(AIMessage(content=response.content))
+        # st.session_state.messages.append(HumanMessage(content=user_input))
 
         # ユーザーの回答が正しい場合の分岐
         if "では、次の問題に進みましょう" in response.content:
@@ -351,11 +351,12 @@ def main():
                 st.session_state.cleared_questions.append(st.session_state.current_question_id)
                 set_cookie()
 
-        user_input = ""
 
         if test_mode:
             logging.info("===== レスポンスのwith終了 =====")
             logging.info(response.content)
+
+        user_input = ""
 
 
 if __name__ == '__main__':
