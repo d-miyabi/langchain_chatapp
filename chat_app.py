@@ -116,9 +116,10 @@ def init_page():
     if test_mode:
         logging.info("===== init_page start =====")
 
+
     st.header("プログラミング用語1問1答100本ノック")
     st.write("このアプリは、Webアプリに関連する専門用語等について学習するドリルです")
-    st.error("`スマートフォンには対応していないため、パソコンからご利用ください`")
+    st.write("<span style='color:red'>スマートフォンには対応していないため、パソコンからご利用ください</span>", unsafe_allow_html=True)
     st.write("---")
     st.markdown("**アプリの使用方法**")
     st.write("① 左のサイドバーから、取り組みたいテーマを選択してください。クリックすると面接官からの質問が行われます。")
