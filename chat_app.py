@@ -40,8 +40,8 @@ def create_dict_from_excel():
 
 
 # 初期設定
-test_mode = True
-del_mode = True
+test_mode = False
+del_mode = False
 questions_list = create_dict_from_excel()
 logging.basicConfig(level=logging.INFO)
 cookie_manager = stx.CookieManager(key="cookie")
@@ -84,9 +84,9 @@ def string_to_list(s):
 def authenticate_user():
     credentials = {
         "usernames": {
-            "test": {
-                "name": "test",
-                "password": "$2b$12$QEOjDRZvNatRI.CkimSgd.eYWAgEw7.NqCrZ1Nh4XexmS0Tdkxjp6"
+            "100knock": {
+                "name": "100knock",
+                "password": "$2b$12$1AFPyzk6PBwatfy6qrys5.tU4etKcj0YpFZdM80AAOzDd./UR6lS2"
             }
         }
     }
