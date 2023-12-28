@@ -295,7 +295,7 @@ def main():
     user_input = ""
     # ユーザーの入力を監視
     if "current_question_id" in st.session_state:
-        user_input = st.chat_input("こちらに回答を入力してください")
+        user_input = st.chat_input(placeholder="こちらに回答を入力してください", key="chat_input")
 
     if user_input:
         if test_mode:
