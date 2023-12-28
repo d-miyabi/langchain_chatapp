@@ -123,8 +123,8 @@ def init_page():
     st.write("---")
     st.markdown("**アプリの使用方法**")
     st.write("① 左のサイドバーから、取り組みたいテーマを選択してください。クリックすると面接官からの質問が行われます。")
-    st.write("② 質問に対して回答を行なってください。")
-    st.write("③ 回答が十分でない場合は追加を求められるので、再度回答を行なってください。合格の場合は、「では、次の問題に進みましょう！」と伝えられます。")
+    st.write("② 質問に対して回答を行なってください。「ヒントをください」と入力すると考えるヒントが得られます。")
+    st.write("③ 正解の場合は、「では、次の問題に進みましょう！」と伝えられます。")
     st.write("※ 解答がうまく表示されない場合は、お手数ですがブラウザをリロードしてください")
     st.write("---")
 
@@ -158,7 +158,7 @@ def display_questions():
     for item in questions_list:
         if item['id'] % 100 == 0:
             with st.sidebar:
-                st.header(item['title'] + "に関するテーマ")
+                st.header(item['title'])
         else:
             if item['id'] in st.session_state.cleared_questions:
                 item_name = "[ ○ ] " + item['title']
