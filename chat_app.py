@@ -15,11 +15,34 @@ from langchain.schema import (
     AIMessage
 )
 
+def create_dict_from_excel():
+    file_path = './questions.xlsx'
+    df = pd.read_excel(file_path)
+
+    # Transform the DataFrame into the desired dictionary format
+    dict_list = []
+    for index, row in df.iterrows():
+        # Check if the ID is not NaN and if the content is a string
+        if pd.notna(row['ID']) and isinstance(row['内容'], str):
+            content_with_newlines = row['内容'].replace('\r\n', '\n').strip()
+            dict_list.append({
+                "id": int(row['ID']),
+                "title": row['タイトル'],
+                "content": content_with_newlines
+            })
+
+    # st.session_state.questions_list = dict_list
+    return dict_list
+
+    if test_mode:
+        logging.info("===== dict_list =====")
+        logging.info(dict_list)
+
 
 # 初期設定
 test_mode = True
 del_mode = True
-isFirst = True
+questions_list = create_dict_from_excel()
 logging.basicConfig(level=logging.INFO)
 cookie_manager = stx.CookieManager(key="cookie")
 role = "あなたは優秀な家庭教師です。あなたの問いに対して生徒が回答したら、内容が妥当か判断してください。正しい場合は、「よく理解されていますね」と答え、返事の最後に「では、次の問題に進みましょう！」と必ず言ってください。また、必要に応じて補足の解説を行ってください。回答に不足や誤りがある場合は、正解は提示せずに、再度考えるよう促してください。ヒントが欲しいと言われたら、直接解答を教えることはせず、解答に至るようなヒントを提示してください。ヒントは、直接答えがわかってしまう内容ではなく、思考のきっかけを与えるだけにとどめてください。また、いつでも生徒がポジティブに取り組めるよう励ます言葉をかけてください。"
@@ -113,7 +136,7 @@ def init_messages():
 
 
 def find_dictionary_by_id(id_to_find):
-    for dictionary in st.session_state.questions_list:
+    for dictionary in questions_list:
         if dictionary['id'] == id_to_find:
             return dictionary
     return None
@@ -126,34 +149,11 @@ def select_model():
     # return ChatOpenAI(temperature=temperature, model_name=model_name)
 
 
-def create_dict_from_excel():
-    file_path = './questions.xlsx'
-    df = pd.read_excel(file_path)
-
-    # Transform the DataFrame into the desired dictionary format
-    dict_list = []
-    for index, row in df.iterrows():
-        # Check if the ID is not NaN and if the content is a string
-        if pd.notna(row['ID']) and isinstance(row['内容'], str):
-            content_with_newlines = row['内容'].replace('\r\n', '\n').strip()
-            dict_list.append({
-                "id": int(row['ID']),
-                "title": row['タイトル'],
-                "content": content_with_newlines
-            })
-
-    st.session_state.questions_list = dict_list
-
-    if test_mode:
-        logging.info("===== dict_list =====")
-        logging.info(dict_list)
-
-
 def display_questions():
     if test_mode:
         logging.info("===== display_questions開始 =====")
 
-    for item in st.session_state.questions_list:
+    for item in questions_list:
         if item['id'] % 100 == 0:
             with st.sidebar:
                 st.header(item['title'] + "に関するテーマ")
@@ -334,7 +334,6 @@ def main():
             st_callback = StreamlitCallbackHandler(st.container())
             response = chat(st.session_state.messages, callbacks=[st_callback])
 
-
         st.session_state.messages.append(AIMessage(content=response.content))
 
 
@@ -361,6 +360,5 @@ def main():
 
 if __name__ == '__main__':
     if authenticate_user():
-        create_dict_from_excel()
         chat = select_model()
         main()
