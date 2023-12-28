@@ -116,15 +116,16 @@ def init_page():
     if test_mode:
         logging.info("===== init_page start =====")
 
-    st.header("面接対策100本ノック")
-    st.write("このアプリは、面接時によく聞かれるWebアプリに関連する専門用語について、回答の仕方を練習するものです。")
+    st.header("プログラミング用語1問1答100本ノック")
+    st.write("このアプリは、Webアプリに関連する専門用語等について学習するドリルです")
+    st.error("`スマートフォンには対応していないため、パソコンからご利用ください`")
     st.write("---")
     st.markdown("**アプリの使用方法**")
     st.write("① 左のサイドバーから、取り組みたいテーマを選択してください。クリックすると面接官からの質問が行われます。")
     st.write("② 質問に対して回答を行なってください。")
     st.write("③ 回答が十分でない場合は追加を求められるので、再度回答を行なってください。合格の場合は、「では、次の問題に進みましょう！」と伝えられます。")
+    st.write("※ 解答がうまく表示されない場合は、お手数ですがブラウザをリロードしてください")
     st.write("---")
-
 
 def init_messages():
     # role = "あなたは優秀な家庭教師です。あなたの問いに対して生徒が回答したら、内容が妥当か判断してください。正しい場合は、必ず最初に「よく理解されていますね」と答え、返事の最後に「次の問題に進みましょう」と必ず言ってください。また、必要に応じて補足を行ってください。不足や誤りがある場合は、正解は提示せずに、再度考えるよう促してください。ヒントが欲しいと言われたら、直接解答を教えることはせず、解答に至るようなヒントを提示してください。また、いつでも生徒がポジティブに取り組めるよう励ます言葉をかけてください。"
@@ -160,11 +161,11 @@ def display_questions():
         else:
             if item['id'] in st.session_state.cleared_questions:
                 item_name = "[ ○ ] " + item['title']
-                st.sidebar.button(item_name, on_click=set_current_question, args=(item['id'],))
+                st.sidebar.button(item_name, key=item['id'], on_click=set_current_question, args=[item['id']])
 
             else:
                 item_name = "[ - ] " + item['title']
-                st.sidebar.button(item_name, on_click=set_current_question, args=(item['id'],))
+                st.sidebar.button(item_name, key=item['id'], on_click=set_current_question, args=[item['id']])
 
 
 def set_current_question(id):
