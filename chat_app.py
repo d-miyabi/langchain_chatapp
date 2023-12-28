@@ -301,21 +301,21 @@ def main():
 
         st.session_state.messages.append(HumanMessage(content=user_input))
 
-        # with st.spinner('考え中です...'):    
-        #     try:
-        #         response = chat(st.session_state.messages)
-        #     except TimeoutError:
-        #         # タイムアウトエラーの処理
-        #         print("タイムアウトが発生しました。後でもう一度試してください。")
-        #     except ConnectionError:
-        #         # 通信エラーの処理
-        #         print("通信エラーが発生しました。ネットワーク接続を確認してください。")
-        #     except Exception as e:
-        #         # その他の一般的なエラーの処理
-        #         print(f"予期せぬエラーが発生しました: {e}")
+        with st.spinner('考え中です...'):    
+            try:
+                response = chat(st.session_state.messages)
+            except TimeoutError:
+                # タイムアウトエラーの処理
+                print("タイムアウトが発生しました。後でもう一度試してください。")
+            except ConnectionError:
+                # 通信エラーの処理
+                print("通信エラーが発生しました。ネットワーク接続を確認してください。")
+            except Exception as e:
+                # その他の一般的なエラーの処理
+                print(f"予期せぬエラーが発生しました: {e}")
 
 
-        response = chat(st.session_state.messages)
+        # response = chat(st.session_state.messages)
 
 
         with st.chat_message("assistant"):
@@ -329,6 +329,7 @@ def main():
                 # logging.info(response.content)
 
         st.session_state.messages.append(AIMessage(content=response.content))
+
 
         # ユーザーの回答が正しい場合の分岐
         if "では、次の問題に進みましょう" in response.content:
@@ -347,7 +348,7 @@ def main():
             logging.info(response.content)
 
         user_input = ""
-
+        response = ""
 
 if __name__ == '__main__':
     if authenticate_user():
