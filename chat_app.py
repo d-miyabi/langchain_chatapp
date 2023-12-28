@@ -284,7 +284,11 @@ def main():
 
     if test_mode:
         logging.info("===== display_messages終了 =====")
-
+        if "current_question_id" in st.session_state:
+            logging.info("current_question_id")
+            logging.info(st.session_state.current_question_id)
+        else:
+            logging.info("current_question_idはない")
 
     # ユーザーの入力を監視
     if "current_question_id" in st.session_state:
