@@ -290,98 +290,102 @@ def main():
         else:
             logging.info("current_question_idはない")
 
+
+
+    user_input = ""
     # ユーザーの入力を監視
     if "current_question_id" in st.session_state:
         user_input = st.chat_input("こちらに回答を入力してください")
-        if user_input:
-            if test_mode:
-                logging.info("===== ユーザー入力あり =====")
-                logging.info("\n")
 
-            with st.chat_message("user"):
-                logging.info("セッション追加前")
-                logging.info(st.session_state.messages)
-                # st.session_state.messages.append(HumanMessage(content=user_input))
+    if user_input:
+        if test_mode:
+            logging.info("===== ユーザー入力あり =====")
+            logging.info("\n")
 
-                logging.info("セッション追加後")
-                logging.info(st.session_state.messages)
+        with st.chat_message("user"):
+            logging.info("セッション追加前")
+            logging.info(st.session_state.messages)
+            # st.session_state.messages.append(HumanMessage(content=user_input))
 
-                st.markdown(user_input)
+            logging.info("セッション追加後")
+            logging.info(st.session_state.messages)
 
-            st.session_state.messages.append(HumanMessage(content=user_input))
+            st.markdown(user_input)
 
-            response = ""
+        st.session_state.messages.append(HumanMessage(content=user_input))
 
-            with st.spinner('考え中です...'):
-                with st.chat_message("assistant"):
-            
-                    if test_mode:
-                        logging.info("llm実行直前")
+        response = ""
 
-                    try:
-                        response = chat(st.session_state.messages)
-                    except TimeoutError:
-                        # タイムアウトエラーの処理
-                        print("タイムアウトが発生しました。後でもう一度試してください。")
-                    except ConnectionError:
-                        # 通信エラーの処理
-                        print("通信エラーが発生しました。ネットワーク接続を確認してください。")
-                    except Exception as e:
-                        # その他の一般的なエラーの処理
-                        print(f"予期せぬエラーが発生しました: {e}")
-
-                    if test_mode:
-                        logging.info("APIからのレスポンス直後")
-                        # logging.info(response.content)
-
-                    # container = st.container()
-                    # st_callback = StreamlitCallbackHandler(container)
-
-
-                    # agent_chain = create_agent_chain()
-                    # response = agent_chain.run(messages, callbacks=[st_callback])
-                    # st.markdown(response)
-                    # st.chat_message("assistant").markdown(response)
-
-                    # st.session_state.messages.append(AIMessage(content=response.content))
-                    # st.markdown(response.content)
-                    # response.content = ""
-
-                    # logging.info(response.content)
-                    # logging.info("アペンド後")
-                    # logging.info(st.session_state.messages)
-
-
-                    # response.content = ""
-                    # st.session_state.messages.append(AIMessage(content=response.content))
-                    st.markdown(response.content)
-
-            st.session_state.messages.append(AIMessage(content=response.content))
-
-            # ユーザーの回答が正しい場合の分岐
-            if "では、次の問題に進みましょう" in response.content:
+        with st.spinner('考え中です...'):
+            with st.chat_message("assistant"):
+        
                 if test_mode:
-                    logging.info("正解の場合")
-                    logging.info(st.session_state.messages)
+                    logging.info("llm実行直前")
 
-                # 回答が正しい場合、問題idを追加
-                if not st.session_state.current_question_id in st.session_state.cleared_questions:
-                    st.session_state.cleared_questions.append(st.session_state.current_question_id)
-                    set_cookie()
+                try:
+                    response = chat(st.session_state.messages)
+                except TimeoutError:
+                    # タイムアウトエラーの処理
+                    print("タイムアウトが発生しました。後でもう一度試してください。")
+                except ConnectionError:
+                    # 通信エラーの処理
+                    print("通信エラーが発生しました。ネットワーク接続を確認してください。")
+                except Exception as e:
+                    # その他の一般的なエラーの処理
+                    print(f"予期せぬエラーが発生しました: {e}")
 
-            user_input = ""
+                if test_mode:
+                    logging.info("APIからのレスポンス直後")
+                    # logging.info(response.content)
+
+                # container = st.container()
+                # st_callback = StreamlitCallbackHandler(container)
 
 
-        # st.session_state.messages.append(AIMessage(content=response))
-        # st.chat_message("assistant").markdown(response.content)
-        # st.session_state.messages.append(AIMessage(content=response.content))
+                # agent_chain = create_agent_chain()
+                # response = agent_chain.run(messages, callbacks=[st_callback])
+                # st.markdown(response)
+                # st.chat_message("assistant").markdown(response)
 
+                # st.session_state.messages.append(AIMessage(content=response.content))
+                # st.markdown(response.content)
+                # response.content = ""
+
+                # logging.info(response.content)
+                # logging.info("アペンド後")
+                # logging.info(st.session_state.messages)
+
+
+                # response.content = ""
+                # st.session_state.messages.append(AIMessage(content=response.content))
+                st.markdown(response.content)
+
+        st.session_state.messages.append(AIMessage(content=response.content))
+
+        # ユーザーの回答が正しい場合の分岐
+        if "では、次の問題に進みましょう" in response.content:
             if test_mode:
-                logging.info("===== レスポンスのwith終了 =====")
-                logging.info(response.content)
+                logging.info("正解の場合")
+                logging.info(st.session_state.messages)
+
+            # 回答が正しい場合、問題idを追加
+            if not st.session_state.current_question_id in st.session_state.cleared_questions:
+                st.session_state.cleared_questions.append(st.session_state.current_question_id)
+                set_cookie()
+
+        user_input = ""
 
 
-        # last_response = st.session_state.messages[-1]
+    # st.session_state.messages.append(AIMessage(content=response))
+    # st.chat_message("assistant").markdown(response.content)
+    # st.session_state.messages.append(AIMessage(content=response.content))
+
+        if test_mode:
+            logging.info("===== レスポンスのwith終了 =====")
+            logging.info(response.content)
+
+
+    # last_response = st.session_state.messages[-1]
 
 
 if __name__ == '__main__':
