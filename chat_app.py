@@ -122,8 +122,8 @@ def find_dictionary_by_id(id_to_find):
 def select_model():
     model_name = "gpt-4"
     temperature = 0.7
-    # return ChatOpenAI(temperature=temperature, model_name=model_name, streaming=True)
-    return ChatOpenAI(temperature=temperature, model_name=model_name)
+    return ChatOpenAI(temperature=temperature, model_name=model_name, streaming=True)
+    # return ChatOpenAI(temperature=temperature, model_name=model_name)
 
 
 def create_dict_from_excel():
@@ -289,46 +289,54 @@ def main():
             logging.info("===== ユーザー入力あり =====")
             logging.info("\n")
 
-        with st.chat_message("user"):
-            logging.info("セッション追加前")
-            logging.info(st.session_state.messages)
-            # st.session_state.messages.append(HumanMessage(content=user_input))
+        # with st.chat_message("user"):
+        #     logging.info("セッション追加前")
+        #     logging.info(st.session_state.messages)
+        #     # st.session_state.messages.append(HumanMessage(content=user_input))
 
-            logging.info("セッション追加後")
-            logging.info(st.session_state.messages)
+        #     logging.info("セッション追加後")
+        #     logging.info(st.session_state.messages)
 
-            st.markdown(user_input)
+        #     st.markdown(user_input)
 
         st.session_state.messages.append(HumanMessage(content=user_input))
+        st.chat_message("user").markdown(user_input)
 
-        with st.spinner('考え中です...'):    
-            try:
-                response = chat(st.session_state.messages)
-            except TimeoutError:
-                # タイムアウトエラーの処理
-                print("タイムアウトが発生しました。後でもう一度試してください。")
-            except ConnectionError:
-                # 通信エラーの処理
-                print("通信エラーが発生しました。ネットワーク接続を確認してください。")
-            except Exception as e:
-                # その他の一般的なエラーの処理
-                print(f"予期せぬエラーが発生しました: {e}")
+        # with st.spinner('考え中です...'):    
+        #     try:
+        #         response = chat(st.session_state.messages)
+        #     except TimeoutError:
+        #         # タイムアウトエラーの処理
+        #         print("タイムアウトが発生しました。後でもう一度試してください。")
+        #     except ConnectionError:
+        #         # 通信エラーの処理
+        #         print("通信エラーが発生しました。ネットワーク接続を確認してください。")
+        #     except Exception as e:
+        #         # その他の一般的なエラーの処理
+        #         print(f"予期せぬエラーが発生しました: {e}")
 
 
         # response = chat(st.session_state.messages)
 
 
+        # with st.chat_message("assistant"):
+        #     st.markdown(response.content)
+
+        #     if test_mode:
+        #         logging.info("llm実行直前")
+
+        #     if test_mode:
+        #         logging.info("APIからのレスポンス直後")
+        #         # logging.info(response.content)
+
+
         with st.chat_message("assistant"):
-            st.markdown(response.content)
+            st_callback = StreamlitCallbackHandler(st.container())
+            response = chat(st.session_state.messages, callbacks=[st_callback])
 
-            if test_mode:
-                logging.info("llm実行直前")
-
-            if test_mode:
-                logging.info("APIからのレスポンス直後")
-                # logging.info(response.content)
 
         st.session_state.messages.append(AIMessage(content=response.content))
+
 
 
         # ユーザーの回答が正しい場合の分岐
