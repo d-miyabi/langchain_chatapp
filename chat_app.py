@@ -99,7 +99,7 @@ def init_page():
     st.markdown("**アプリの使用方法**")
     st.write("① 左のサイドバーから、取り組みたいテーマを選択してください。クリックすると面接官からの質問が行われます。")
     st.write("② 質問に対して回答を行なってください。")
-    st.write("③ 回答が十分でない場合は追加を求められので、再度回答を行なってください。合格の場合は、「では、次の問題に進みましょう！」と伝えられます。")
+    st.write("③ 回答が十分でない場合は追加を求められるので、再度回答を行なってください。合格の場合は、「では、次の問題に進みましょう！」と伝えられます。")
     st.write("---")
 
 
@@ -316,14 +316,15 @@ def main():
 
         response = ""
 
-        with st.spinner('考え中です...'):
-            with st.chat_message("assistant"):
-        
+        with st.chat_message("assistant"):
+            with st.spinner('考え中です...'):    
                 if test_mode:
                     logging.info("llm実行直前")
 
                 try:
                     response = chat(st.session_state.messages)
+                    st.markdown(response.content)
+                    st.session_state.messages.append(AIMessage(content=response.content))
                 except TimeoutError:
                     # タイムアウトエラーの処理
                     print("タイムアウトが発生しました。後でもう一度試してください。")
@@ -338,29 +339,6 @@ def main():
                     logging.info("APIからのレスポンス直後")
                     # logging.info(response.content)
 
-                # container = st.container()
-                # st_callback = StreamlitCallbackHandler(container)
-
-
-                # agent_chain = create_agent_chain()
-                # response = agent_chain.run(messages, callbacks=[st_callback])
-                # st.markdown(response)
-                # st.chat_message("assistant").markdown(response)
-
-                # st.session_state.messages.append(AIMessage(content=response.content))
-                # st.markdown(response.content)
-                # response.content = ""
-
-                # logging.info(response.content)
-                # logging.info("アペンド後")
-                # logging.info(st.session_state.messages)
-
-
-                # response.content = ""
-                # st.session_state.messages.append(AIMessage(content=response.content))
-                st.markdown(response.content)
-
-        st.session_state.messages.append(AIMessage(content=response.content))
 
         # ユーザーの回答が正しい場合の分岐
         if "では、次の問題に進みましょう" in response.content:
@@ -375,17 +353,9 @@ def main():
 
         user_input = ""
 
-
-    # st.session_state.messages.append(AIMessage(content=response))
-    # st.chat_message("assistant").markdown(response.content)
-    # st.session_state.messages.append(AIMessage(content=response.content))
-
         if test_mode:
             logging.info("===== レスポンスのwith終了 =====")
             logging.info(response.content)
-
-
-    # last_response = st.session_state.messages[-1]
 
 
 if __name__ == '__main__':
