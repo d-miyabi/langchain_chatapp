@@ -349,6 +349,7 @@ def main():
 
         user_input = ""
         response = ""
+        st.experimental_rerun()
 
 if __name__ == '__main__':
     if authenticate_user():
