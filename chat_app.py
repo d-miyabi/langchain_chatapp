@@ -199,18 +199,6 @@ def register_cookie_to_state():
                 logging.info("===== クッキーなし =====")
 
 
-# 未使用の関数
-# ストリームに変更するなら使う可能性あり
-def create_agent_chain():
-    chat = ChatOpenAI(
-        model_name='gpt-4',
-        temperature=0,
-        streaming=True,
-)
-    tools = load_tools(["ddg-search"])
-    return initialize_agent(tools, chat, agent=AgentType.OPENAI_FUNCTIONS)
-
-
 def display_messages():
     messages = st.session_state.messages
     for message in messages:
@@ -291,7 +279,6 @@ def main():
             logging.info("current_question_idはない")
 
 
-
     user_input = ""
     # ユーザーの入力を監視
     if "current_question_id" in st.session_state:
@@ -314,18 +301,22 @@ def main():
 
         st.session_state.messages.append(HumanMessage(content=user_input))
 
-        with st.spinner('考え中です...'):    
-            try:
-                response = chat(st.session_state.messages)
-            except TimeoutError:
-                # タイムアウトエラーの処理
-                print("タイムアウトが発生しました。後でもう一度試してください。")
-            except ConnectionError:
-                # 通信エラーの処理
-                print("通信エラーが発生しました。ネットワーク接続を確認してください。")
-            except Exception as e:
-                # その他の一般的なエラーの処理
-                print(f"予期せぬエラーが発生しました: {e}")
+        # with st.spinner('考え中です...'):    
+        #     try:
+        #         response = chat(st.session_state.messages)
+        #     except TimeoutError:
+        #         # タイムアウトエラーの処理
+        #         print("タイムアウトが発生しました。後でもう一度試してください。")
+        #     except ConnectionError:
+        #         # 通信エラーの処理
+        #         print("通信エラーが発生しました。ネットワーク接続を確認してください。")
+        #     except Exception as e:
+        #         # その他の一般的なエラーの処理
+        #         print(f"予期せぬエラーが発生しました: {e}")
+
+
+        response = chat(st.session_state.messages)
+
 
         with st.chat_message("assistant"):
             st.markdown(response.content)
@@ -338,7 +329,6 @@ def main():
                 # logging.info(response.content)
 
         st.session_state.messages.append(AIMessage(content=response.content))
-        # st.session_state.messages.append(HumanMessage(content=user_input))
 
         # ユーザーの回答が正しい場合の分岐
         if "では、次の問題に進みましょう" in response.content:
