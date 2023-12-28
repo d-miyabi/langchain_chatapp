@@ -19,6 +19,7 @@ from langchain.schema import (
 # 初期設定
 test_mode = True
 del_mode = True
+isFirst = True
 logging.basicConfig(level=logging.INFO)
 cookie_manager = stx.CookieManager(key="cookie")
 role = "あなたは優秀な家庭教師です。あなたの問いに対して生徒が回答したら、内容が妥当か判断してください。正しい場合は、「よく理解されていますね」と答え、返事の最後に「では、次の問題に進みましょう！」と必ず言ってください。また、必要に応じて補足の解説を行ってください。回答に不足や誤りがある場合は、正解は提示せずに、再度考えるよう促してください。ヒントが欲しいと言われたら、直接解答を教えることはせず、解答に至るようなヒントを提示してください。ヒントは、直接答えがわかってしまう内容ではなく、思考のきっかけを与えるだけにとどめてください。また、いつでも生徒がポジティブに取り組めるよう励ます言葉をかけてください。"
@@ -94,11 +95,12 @@ def init_page():
 
     st.header("面接対策100本ノック")
     st.write("このアプリは、面接時によく聞かれるWebアプリに関連する専門用語について、回答の仕方を練習するものです。")
-    st.markdown("**使い方**")
+    st.write("---")
+    st.markdown("**アプリの使用方法**")
     st.write("① 左のサイドバーから、取り組みたいテーマを選択してください。クリックすると面接官からの質問が行われます。")
     st.write("② 質問に対して回答を行なってください。")
     st.write("③ 回答が十分でない場合は追加を求められので、再度回答を行なってください。合格の場合は、「では、次の問題に進みましょう！」と伝えられます。")
-
+    st.write("---")
 
 
 def init_messages():
@@ -108,7 +110,6 @@ def init_messages():
         st.session_state.messages = [
             SystemMessage(content=role),
         ]
-        st.session_state.costs = []
 
 
 def find_dictionary_by_id(id_to_find):
@@ -224,6 +225,7 @@ def display_messages():
 def main():
     if test_mode:
         logging.info("===== main start =====")
+        logging.info(st.session_state)
 
         if "cleared_questions" in st.session_state:
             logging.info(st.session_state.cleared_questions)
